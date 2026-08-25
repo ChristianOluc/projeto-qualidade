@@ -1,0 +1,55 @@
+name: CI/CD
+
+on:
+  push:
+    branches:
+      - main
+  pull_request:
+    branches:
+      - main
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Obter código
+        uses: actions/checkout@v4
+
+      - name: Configurar Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.13"
+
+      - name: Instalar dependências
+        run: pip install -r requirements.txt
+
+      - name: Executar testes
+        run: pytest
+
+  quality_gate:
+    needs: build
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Quality Gate aprovado
+        run: echo "Testes aprovados. Delivery liberado."
+
+  delivery:
+    needs: quality_gate
+    if: github.ref == 'refs/heads/main'
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Obter código
+        uses: actions/checkout@v4
+
+      - name: Gerar artefato
+        uses: actions/upload-artifact@v4
+        with:
+          name: projeto-qualidade
+          path: |
+            calculadora.py
+            requirements.txt
+            pytest.ini
+            tests/
