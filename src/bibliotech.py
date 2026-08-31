@@ -8,8 +8,6 @@ def pode_emprestar(usuario_ativo, possui_pendencia, emprestimos_ativos):
     if possui_pendencia:
         return False
 
-    # Usuário não pode realizar novo empréstimo
-    # quando já atingiu o limite máximo.
     if emprestimos_ativos >= LIMITE_EMPRESTIMOS:
         return False
 
